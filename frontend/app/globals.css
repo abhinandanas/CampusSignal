@@ -1,26 +1,132 @@
 @import "tailwindcss";
 
+/* ── Signal Atlas Theme Tokens ── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FFFFFF;
+  --foreground: #242B38;
+
+  /* Signal Atlas Palette */
+  --atlas-bg: #FFFFFF;
+  --atlas-card: #FFFFFF;
+  --atlas-map-bg: #F3F6F8;
+  --atlas-text-primary: #242B38;
+  --atlas-text-secondary: #697586;
+  --atlas-border: #E4E8EC;
+  --atlas-divider: #EDF1F5;
+
+  /* Brand Accent: Terracotta */
+  --atlas-terracotta: #B84C3A;
+  --atlas-terracotta-hover: #A03F2F;
+  --atlas-terracotta-subtle: rgba(184, 76, 58, 0.08);
+  --atlas-terracotta-ring: rgba(184, 76, 58, 0.25);
+
+  /* Performance Status Indicators */
+  --atlas-healthy: #39836A;
+  --atlas-healthy-subtle: rgba(57, 131, 106, 0.1);
+  --atlas-weak: #D5A342;
+  --atlas-weak-subtle: rgba(213, 163, 66, 0.12);
+  --atlas-poor: #C0392B;
+  --atlas-poor-subtle: rgba(192, 57, 43, 0.1);
+}
+
+/* Dark Mode Appearance */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #111622;
+    --foreground: #F1F4F9;
+
+    --atlas-bg: #111622;
+    --atlas-card: #18202F;
+    --atlas-map-bg: #141A26;
+    --atlas-text-primary: #F1F4F9;
+    --atlas-text-secondary: #94A3B8;
+    --atlas-border: #263245;
+    --atlas-divider: #1E2838;
+
+    --atlas-terracotta: #C95D4A;
+    --atlas-terracotta-hover: #DB6F5C;
+    --atlas-terracotta-subtle: rgba(201, 93, 74, 0.15);
+    --atlas-terracotta-ring: rgba(201, 93, 74, 0.35);
+
+    --atlas-healthy: #4EAA8B;
+    --atlas-healthy-subtle: rgba(78, 170, 139, 0.16);
+    --atlas-weak: #E4B558;
+    --atlas-weak-subtle: rgba(228, 181, 88, 0.16);
+    --atlas-poor: #E05A47;
+    --atlas-poor-subtle: rgba(224, 90, 71, 0.16);
+  }
+}
+
+/* Explicit class-based dark mode override */
+.dark {
+  --background: #111622;
+  --foreground: #F1F4F9;
+
+  --atlas-bg: #111622;
+  --atlas-card: #18202F;
+  --atlas-map-bg: #141A26;
+  --atlas-text-primary: #F1F4F9;
+  --atlas-text-secondary: #94A3B8;
+  --atlas-border: #263245;
+  --atlas-divider: #1E2838;
+
+  --atlas-terracotta: #C95D4A;
+  --atlas-terracotta-hover: #DB6F5C;
+  --atlas-terracotta-subtle: rgba(201, 93, 74, 0.15);
+  --atlas-terracotta-ring: rgba(201, 93, 74, 0.35);
+
+  --atlas-healthy: #4EAA8B;
+  --atlas-healthy-subtle: rgba(78, 170, 139, 0.16);
+  --atlas-weak: #E4B558;
+  --atlas-weak-subtle: rgba(228, 181, 88, 0.16);
+  --atlas-poor: #E05A47;
+  --atlas-poor-subtle: rgba(224, 90, 71, 0.16);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-atlas-bg: var(--atlas-bg);
+  --color-atlas-card: var(--atlas-card);
+  --color-atlas-map: var(--atlas-map-bg);
+  --color-atlas-primary: var(--atlas-text-primary);
+  --color-atlas-secondary: var(--atlas-text-secondary);
+  --color-atlas-border: var(--atlas-border);
+  --color-atlas-divider: var(--atlas-divider);
+  --color-terracotta: var(--atlas-terracotta);
+  --color-terracotta-hover: var(--atlas-terracotta-hover);
+  --color-terracotta-subtle: var(--atlas-terracotta-subtle);
+  --color-healthy: var(--atlas-healthy);
+  --color-healthy-subtle: var(--atlas-healthy-subtle);
+  --color-weak: var(--atlas-weak);
+  --color-weak-subtle: var(--atlas-weak-subtle);
+  --color-poor: var(--atlas-poor);
+  --color-poor-subtle: var(--atlas-poor-subtle);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--atlas-bg);
+  color: var(--atlas-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar for GIS map & panels */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--atlas-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--atlas-text-secondary);
 }
