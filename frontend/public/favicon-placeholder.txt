@@ -1,0 +1,2 @@
+Placeholder for CampusSignal favicon asset.
+In later stages, replace with actual favicon.ico or logo icon.

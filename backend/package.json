@@ -1,0 +1,23 @@
+{
+  "name": "campussignal-backend",
+  "version": "0.1.0",
+  "description": "CampusSignal backend API server — Node.js / Express / PostgreSQL",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js"
+  },
+  "keywords": ["campussignal", "wifi", "network", "monitoring"],
+  "author": "SignalX Team",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "pg": "^8.16.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

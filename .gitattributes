@@ -1,0 +1,14 @@
+# Normalize line endings to LF in the repository
+* text=auto eol=lf
+
+# Force binary files to be treated as binary
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+
+# Lockfiles — do not diff
+package-lock.json -diff
