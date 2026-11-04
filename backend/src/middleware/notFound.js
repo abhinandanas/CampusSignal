@@ -1,19 +1,3 @@
-/**
- * 404 Route-Not-Found Middleware
- * Catches any request that does not match a registered route and sends
- * a standardized JSON error response.
- */
-function notFound(req, res, next) {
-  const message = `Resource not found: ${req.method} ${req.originalUrl}`;
-  res.status(404).json({
-    status: 'error',
-    error: {
-      status: 404,
-      message
-    },
-    message,
-    details: null
-  });
+export function notFound(_req, res) {
+  res.status(404).json({ status: 'error', message: 'Route not found', details: null });
 }
-
-export default notFound;

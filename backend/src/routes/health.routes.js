@@ -1,9 +1,4 @@
 import { Router } from 'express';
-import { getHealth } from '../controllers/health.controller.js';
-
-const router = Router();
-
-// GET /api/health — System health and database connectivity check
-router.get('/', getHealth);
-
-export default router;
+import { createHealthController } from '../controllers/health.controller.js';
+import { asyncHandler } from '../middleware/asyncHandler.js';
+export default function healthRoutes(options) { const router = Router(); router.get('/', asyncHandler(createHealthController(options?.pool))); return router; }
