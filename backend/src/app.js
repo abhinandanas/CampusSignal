@@ -11,13 +11,14 @@
 
 import express from 'express';
 import cors from 'cors';
+import { config } from './config/env.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import { testConnection } from './config/database.js';
 
 const app = express();
 
 // ── Global Middleware ────────────────────────────────────────────────────────
-const allowedOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:3000';
+const allowedOrigin = config.frontendOrigin;
 
 app.use(cors({
   origin: allowedOrigin,

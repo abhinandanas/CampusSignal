@@ -1,50 +1,53 @@
-/**
- * CampusSignal — Backend Server Entry Point
- * Owner: Abhinandana S
- *
- * Responsibilities:
- * - Load environment variables
- * - Start the Express HTTP listener
- * - Manage graceful shutdown protocols
- */
+/** CampusSignal Express server entry point and graceful shutdown handling. */
 
 import { config } from './config/env.js';
 import app from './app.js';
-import { closePool } from './config/database.js';
+import { closePool, testConnection } from './config/database.js';
 
-const PORT = config.port;
-const NODE_ENV = config.env;
+const server = app.listen(config.port, () => {
+  console.log(`[CampusSignal] Server running in ${config.env} mode on port ${config.port}`);
+  console.log(`[CampusSignal] Health endpoint: http://localhost:${config.port}/api/health`);
+  console.log(`[CampusSignal] Dashboard: http://localhost:${config.port}/api/dashboard/summary`);
+  console.log(`[CampusSignal] Database target: ${config.database.host}:${config.database.port}/${config.database.database}`);
 
-const server = app.listen(PORT, () => {
-  console.log('='.repeat(60));
-  console.log('  CampusSignal – Wi-Fi Dead-Zone Mapper API Server');
-  console.log(`  Environment: ${NODE_ENV}`);
-  console.log(`  Local URL:   http://localhost:${PORT}`);
-  console.log(`  Health API:  http://localhost:${PORT}/api/health`);
-  console.log(`  Dashboard:   http://localhost:${PORT}/api/dashboard/summary`);
-  console.log(`  Database:    ${config.database.host}:${config.database.port}/${config.database.database}`);
-  console.log('='.repeat(60));
+  testConnection().then((result) => {
+    const status = result.ok ? 'connected' : (config.database.isConfigured ? 'disconnected' : 'not configured');
+    console.log(`[CampusSignal] Database connection status: ${status}`);
+  });
 });
 
-// ── Graceful Shutdown ────────────────────────────────────────────────────────
-async function handleShutdown(signal) {
-  console.log(`\n[Server] Received ${signal}. Commencing graceful shutdown...`);
-  server.close(async () => {
-    console.log('[Server] HTTP listener closed cleanly.');
-    try {
-      await closePool();
-      console.log('[Server] PostgreSQL connection pool terminated.');
-    } catch (err) {
-      console.error('[Server] Error while terminating database pool:', err.message);
-    }
-    process.exit(0);
-  });
+server.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`[CampusSignal] Port ${config.port} is already in use. Set a different PORT in backend/.env.`);
+  } else {
+    console.error('[CampusSignal] Server failed to start:', error.message);
+  }
+  process.exitCode = 1;
+});
 
-  // Force shutdown after timeout if pending connections hang
-  setTimeout(() => {
-    console.error('[Server] Forced shutdown: connections failed to close in time.');
+let isShuttingDown = false;
+
+async function handleShutdown(signal) {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+  console.log(`\n[CampusSignal] Received ${signal}; shutting down.`);
+
+  const forceExit = setTimeout(() => {
+    console.error('[CampusSignal] Forced shutdown after 10 seconds.');
     process.exit(1);
   }, 10000);
+  forceExit.unref();
+
+  server.close(async (error) => {
+    if (error) console.error('[CampusSignal] HTTP server shutdown error:', error.message);
+    try {
+      await closePool();
+      console.log('[CampusSignal] PostgreSQL pool closed.');
+    } catch (closeError) {
+      console.error('[CampusSignal] Error closing PostgreSQL pool:', closeError.message);
+      process.exitCode = 1;
+    }
+  });
 }
 
 process.on('SIGTERM', () => handleShutdown('SIGTERM'));

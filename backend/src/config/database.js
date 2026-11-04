@@ -1,54 +1,36 @@
-/**
- * CampusSignal — PostgreSQL Database Connection Pool
- * Purpose: Manages persistent connections to PostgreSQL using the pg driver
- */
+/** CampusSignal PostgreSQL pool and connection helpers. */
 
-import pkg from 'pg';
-const { Pool } = pkg;
+import pg from 'pg';
 import { config } from './env.js';
 
+const { Pool } = pg;
 const dbConfig = config.database;
 
 export const pool = new Pool({
-  host: dbConfig.host,
-  port: dbConfig.port,
-  database: dbConfig.database,
-  user: dbConfig.user,
-  password: dbConfig.password,
+  ...(dbConfig.connectionString
+    ? { connectionString: dbConfig.connectionString }
+    : {
+        host: dbConfig.host,
+        port: dbConfig.port,
+        database: dbConfig.database,
+        user: dbConfig.user || undefined,
+        password: dbConfig.password || undefined,
+      }),
   max: dbConfig.max,
   idleTimeoutMillis: dbConfig.idleTimeoutMillis,
   connectionTimeoutMillis: dbConfig.connectionTimeoutMillis,
 });
 
-// Report unexpected errors on idle clients without exposing connection details.
 pool.on('error', (error) => {
   console.error(`[Database Pool] Unexpected client error${error.code ? ` (${error.code})` : ''}.`);
 });
 
-/**
- * Execute a parameterized SQL query with automatic client lease from the pool.
- * @param {string} text - SQL statement with positional parameters ($1, $2, etc.)
- * @param {Array} params - Values to bind to parameters
- * @returns {Promise<import('pg').QueryResult>}
- */
+/** Run a parameterized query using the shared pool. */
 export async function query(text, params = []) {
-  const start = Date.now();
-  try {
-    const res = await pool.query(text, params);
-    const duration = Date.now() - start;
-    if (config.env === 'development' && duration > 500) {
-      console.warn(`[Slow Query] ${duration}ms: ${text}`);
-    }
-    return res;
-  } catch (error) {
-    console.error(
-      `[Database Query Error]${error.code ? ` (${error.code})` : ''}: ${error.message}`
-    );
-    throw error;
-  }
+  return pool.query(text, params);
 }
 
-function getConnectionFailureMessage(error) {
+function connectionErrorMessage(error) {
   switch (error.code) {
     case 'ECONNREFUSED':
       return 'Could not reach PostgreSQL. Check that the service is running and DB_HOST/DB_PORT are correct.';
@@ -63,38 +45,37 @@ function getConnectionFailureMessage(error) {
   }
 }
 
-/**
- * Verifies that the PostgreSQL server is reachable and credentials are valid.
- * @returns {Promise<{ ok: boolean, database?: string, time?: string, error?: string }>}
- */
+/** Check database configuration and connectivity without exposing secrets. */
 export async function testConnection() {
+  if (!dbConfig.isConfigured) {
+    return { ok: false, error: 'Database credentials are not configured. Set DATABASE_URL or DB_* values in backend/.env.' };
+  }
+
   try {
-    const client = await pool.connect();
-    try {
-      const res = await client.query('SELECT NOW() AS current_time, current_database() AS db_name;');
-      return {
-        ok: true,
-        database: res.rows[0].db_name,
-        time: res.rows[0].current_time,
-      };
-    } finally {
-      client.release();
-    }
-  } catch (error) {
-    const message = getConnectionFailureMessage(error);
-    console.error(
-      `[Database] Connection check failed${error.code ? ` (${error.code})` : ''}: ${message}`
-    );
+    const result = await pool.query('SELECT NOW() AS current_time, current_database() AS db_name;');
     return {
-      ok: false,
-      error: message,
+      ok: true,
+      database: result.rows[0].db_name,
+      time: result.rows[0].current_time,
     };
+  } catch (error) {
+    const message = connectionErrorMessage(error);
+    console.error(`[Database] Connection check failed${error.code ? ` (${error.code})` : ''}: ${message}`);
+    return { ok: false, error: message };
   }
 }
 
-/**
- * Gracefully shuts down the connection pool (used during server shutdown).
- */
+// Compatibility shape for callers that consume the earlier health-check API.
+export async function checkConnection() {
+  const result = await testConnection();
+  return {
+    connected: result.ok,
+    status: result.ok ? 'connected' : (dbConfig.isConfigured ? 'disconnected' : 'not_configured'),
+    ...(result.error ? { error: result.error } : {}),
+  };
+}
+
+/** Gracefully close the shared connection pool. */
 export async function closePool() {
   await pool.end();
 }

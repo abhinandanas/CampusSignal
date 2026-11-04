@@ -1,26 +1,70 @@
 @import "tailwindcss";
 
+/* ── Signal Atlas Theme Variables ─────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --atlas-main-bg: #FFFFFF;
+  --atlas-card-bg: #FFFFFF;
+  --atlas-map-bg: #F3F6F8;
+  --atlas-text-primary: #242B38;
+  --atlas-text-secondary: #697586;
+  --atlas-border: #E4E8EC;
+  --atlas-terracotta: #B84C3A;
+  --atlas-terracotta-hover: #A03D2D;
+  --atlas-terracotta-light: #FBF0EE;
+  --atlas-healthy: #39836A;
+  --atlas-healthy-light: #EDF7F3;
+  --atlas-weak: #D5A342;
+  --atlas-weak-light: #FEF8EC;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+[data-theme="dark"],
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    --atlas-main-bg: #11151D;
+    --atlas-card-bg: #171D27;
+    --atlas-map-bg: #1A222F;
+    --atlas-text-primary: #E8EDF3;
+    --atlas-text-secondary: #8B98A9;
+    --atlas-border: #273140;
+    --atlas-terracotta: #B84C3A;
+    --atlas-terracotta-hover: #C95642;
+    --atlas-terracotta-light: rgba(184, 76, 58, 0.18);
+    --atlas-healthy: #4DA284;
+    --atlas-healthy-light: rgba(57, 131, 106, 0.18);
+    --atlas-weak: #E0B253;
+    --atlas-weak-light: rgba(213, 163, 66, 0.18);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+html, body {
+  background-color: var(--atlas-main-bg);
+  color: var(--atlas-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* ── Crisp GIS Map Styling & Grid Lines ──────────────────────────────────── */
+.gis-grid-bg {
+  background-image: 
+    linear-gradient(to right, rgba(105, 117, 134, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(105, 117, 134, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Subtle scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--atlas-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--atlas-text-secondary);
 }
