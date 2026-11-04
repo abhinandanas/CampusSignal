@@ -1,9 +1,9 @@
-// backend/src/routes/health.routes.js
-const express = require('express');
-const router = express.Router();
-const { getHealth } = require('../controllers/health.controller');
+import { Router } from 'express';
+import { getHealth } from '../controllers/health.controller.js';
+
+const router = Router();
 
 // GET /api/health — System health and database connectivity check
 router.get('/', getHealth);
 
-module.exports = router;
+export default router;

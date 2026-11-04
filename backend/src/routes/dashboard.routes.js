@@ -1,8 +1,25 @@
-// backend/src/routes/dashboard.routes.js
-const express = require('express');
-const router = express.Router();
+/**
+ * CampusSignal — Dashboard Routes
+ * Owner: Abhinandana S
+ *
+ * Responsibilities:
+ * - Route definitions for dashboard endpoints
+ * - Mounted at /api/dashboard in app.js
+ */
 
-// GET /api/dashboard/summary — Handled in future milestone by team
-// Placeholder router ready for dashboard.controller
+import { Router } from 'express';
+import * as dashboardController from '../controllers/dashboard.controller.js';
 
-module.exports = router;
+const router = Router();
+
+// GET /api/dashboard & GET /api/dashboard/summary -> Aggregated KPI summary
+router.get('/', dashboardController.getDashboardSummary);
+router.get('/summary', dashboardController.getDashboardSummary);
+
+// GET /api/dashboard/comparison -> Location-wise performance comparison
+router.get('/comparison', dashboardController.getLocationComparison);
+
+// GET /api/dashboard/recent-tests -> Recent test submissions
+router.get('/recent-tests', dashboardController.getRecentTests);
+
+export default router;

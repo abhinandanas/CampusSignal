@@ -1,5 +1,4 @@
-// backend/src/middleware/errorHandler.js
-const env = require('../config/env');
+import { config } from '../config/env.js';
 
 /**
  * Centralized Error-Handling Middleware
@@ -40,7 +39,7 @@ function errorHandler(err, req, res, next) {
     (typeof err.code === 'string' && err.code.startsWith('08')); // PostgreSQL class 08: connection exception
 
   if (isDbConnectionError) {
-    if (env.NODE_ENV !== 'production') {
+    if (config.env !== 'production') {
       console.error('[CampusSignal] Database connection error:', err.message);
     }
 
@@ -59,12 +58,12 @@ function errorHandler(err, req, res, next) {
   const status = typeof err.status === 'number' ? err.status : (typeof err.statusCode === 'number' ? err.statusCode : 500);
 
   // 4. Log unexpected errors during development
-  if (env.NODE_ENV !== 'production') {
+  if (config.env !== 'production') {
     console.error(`[CampusSignal Error] [${req.method} ${req.originalUrl}] ${status}:`, err);
   }
 
   // 5. Sanitize messages in production for 500 internal server errors
-  const isProduction = env.NODE_ENV === 'production';
+  const isProduction = config.env === 'production';
   const clientMessage = isProduction && status === 500
     ? 'Internal server error'
     : (err.message || 'An unexpected error occurred');
@@ -80,4 +79,4 @@ function errorHandler(err, req, res, next) {
   });
 }
 
-module.exports = errorHandler;
+export default errorHandler;

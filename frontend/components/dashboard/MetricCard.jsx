@@ -1,105 +1,73 @@
-"use client";
-
-import React from "react";
+import React from 'react';
+import Card from '../common/Card';
 
 /**
- * MetricCard — Signal Atlas KPI Display Card
- * Displays numerical performance figures with units, status indicators, and clean typography.
+ * CampusSignal — Metric Card
+ * Owner: Abhinandana S
  */
 export default function MetricCard({
   title,
   value,
   unit,
-  status = "neutral",
-  icon: Icon,
   subtitle,
-  change,
-  className = "",
+  icon: Icon,
+  badgeText,
+  badgeType = 'neutral',
+  accentColor = '#B84C3A',
 }) {
-  // Status-driven styling
-  const statusConfig = {
-    healthy: {
-      badgeBg: "bg-[var(--atlas-healthy-subtle)]",
-      textColor: "text-[var(--atlas-healthy)]",
-      borderColor: "border-[var(--atlas-healthy)]/25",
-      dotColor: "bg-[var(--atlas-healthy)]",
-      label: "Healthy",
-    },
-    weak: {
-      badgeBg: "bg-[var(--atlas-weak-subtle)]",
-      textColor: "text-[var(--atlas-weak)]",
-      borderColor: "border-[var(--atlas-weak)]/25",
-      dotColor: "bg-[var(--atlas-weak)]",
-      label: "Weak",
-    },
-    poor: {
-      badgeBg: "bg-[var(--atlas-poor-subtle)]",
-      textColor: "text-[var(--atlas-poor)]",
-      borderColor: "border-[var(--atlas-poor)]/25",
-      dotColor: "bg-[var(--atlas-poor)]",
-      label: "Dead Zone",
-    },
-    terracotta: {
-      badgeBg: "bg-[var(--atlas-terracotta-subtle)]",
-      textColor: "text-[var(--atlas-terracotta)]",
-      borderColor: "border-[var(--atlas-terracotta)]/25",
-      dotColor: "bg-[var(--atlas-terracotta)]",
-      label: "Active",
-    },
-    neutral: {
-      badgeBg: "bg-[var(--atlas-map-bg)]",
-      textColor: "text-[var(--atlas-text-secondary)]",
-      borderColor: "border-[var(--atlas-border)]",
-      dotColor: "bg-[var(--atlas-text-secondary)]",
-      label: "Standard",
-    },
+  const badgeClasses = {
+    healthy: 'bg-[#EDF7F3] dark:bg-[rgba(57,131,106,0.18)] text-[#1B5441] dark:text-[#4DA284] border-[#93CBB8] dark:border-[#2B5446]',
+    weak: 'bg-[#FEF8EC] dark:bg-[rgba(213,163,66,0.18)] text-[#8A6417] dark:text-[#E0B253] border-[#F2D390] dark:border-[#59461F]',
+    poor: 'bg-[#FBF0EE] dark:bg-[rgba(184,76,58,0.18)] text-[#7C2B1D] dark:text-[#E27663] border-[#E8A398] dark:border-[#57271F]',
+    neutral: 'bg-[#F3F6F8] dark:bg-[#1F2734] text-[#394353] dark:text-[#8B98A9] border-[#D0D7DE] dark:border-[#2E3B4D]',
   };
 
-  const currentStatus = statusConfig[status] || statusConfig.neutral;
-
   return (
-    <div
-      className={`bg-[var(--atlas-card)] border border-[var(--atlas-border)] rounded-md p-4 transition-all duration-150 hover:border-[var(--atlas-terracotta)]/40 ${className}`}
-    >
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-medium uppercase tracking-wider text-[var(--atlas-text-secondary)]">
-          {title}
-        </span>
-        {Icon && (
-          <div className="p-1.5 rounded bg-[var(--atlas-map-bg)] text-[var(--atlas-text-secondary)]">
-            <Icon className="w-4 h-4" strokeWidth={1.8} />
-          </div>
-        )}
-      </div>
-
-      <div className="flex items-baseline gap-1.5 mb-1.5">
-        <span className="text-2xl lg:text-3xl font-semibold tracking-tight text-[var(--atlas-text-primary)] tabular-nums">
-          {value !== undefined && value !== null ? value : "—"}
-        </span>
-        {unit && (
-          <span className="text-xs font-medium text-[var(--atlas-text-secondary)]">
-            {unit}
+    <Card className="hover:border-[#B84C3A]/40 transition-colors" noPadding>
+      <div className="p-4">
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <span className="text-xs font-semibold text-[#697586] dark:text-[#8B98A9] uppercase tracking-wider">
+            {title}
           </span>
-        )}
-      </div>
+          {Icon && (
+            <div
+              className="w-7 h-7 rounded-md flex items-center justify-center shrink-0"
+              style={{
+                backgroundColor: `${accentColor}18`,
+                color: accentColor,
+              }}
+            >
+              <Icon className="w-3.5 h-3.5" />
+            </div>
+          )}
+        </div>
 
-      <div className="flex items-center justify-between pt-2 border-t border-[var(--atlas-divider)] text-xs">
-        {subtitle && (
-          <span className="text-[var(--atlas-text-secondary)] truncate">
-            {subtitle}
+        <div className="flex items-baseline gap-1.5 my-1">
+          <span className="text-2xl font-bold tracking-tight text-[#242B38] dark:text-[#E8EDF3]">
+            {value !== undefined && value !== null ? value : '--'}
           </span>
-        )}
-        {status !== "neutral" && (
-          <div
-            className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium border ${currentStatus.badgeBg} ${currentStatus.textColor} ${currentStatus.borderColor}`}
-          >
+          {unit && (
+            <span className="text-xs font-medium text-[#697586] dark:text-[#8B98A9]">
+              {unit}
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between gap-2 mt-2 pt-2 border-t border-[#E4E8EC] dark:border-[#273140]">
+          <span className="text-[11px] text-[#697586] dark:text-[#8B98A9] truncate">
+            {subtitle || 'Campus Telemetry'}
+          </span>
+          {badgeText && (
             <span
-              className={`w-1.5 h-1.5 rounded-full ${currentStatus.dotColor}`}
-            />
-            {currentStatus.label}
-          </div>
-        )}
+              className={`text-[10px] font-medium px-2 py-0.5 rounded-full border shrink-0 ${
+                badgeClasses[badgeType] || badgeClasses.neutral
+              }`}
+            >
+              {badgeText}
+            </span>
+          )}
+        </div>
       </div>
-    </div>
+    </Card>
   );
 }

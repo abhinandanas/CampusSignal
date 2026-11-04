@@ -1,4 +1,3 @@
-// backend/src/middleware/notFound.js
 /**
  * 404 Route-Not-Found Middleware
  * Catches any request that does not match a registered route and sends
@@ -17,4 +16,4 @@ function notFound(req, res, next) {
   });
 }
 
-module.exports = notFound;
+export default notFound;

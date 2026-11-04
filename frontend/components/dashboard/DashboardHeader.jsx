@@ -1,112 +1,54 @@
-"use client";
+'use client';
 
-import React from "react";
-import {
-  Compass,
-  Radio,
-  Wifi,
-  RefreshCw,
-  Layers,
-  MapPin,
-  CheckCircle2,
-  AlertTriangle,
-  Flame,
-} from "lucide-react";
+import React from 'react';
+import { RefreshCw, MapPin } from 'lucide-react';
+import Button from '../common/Button';
 
 /**
- * DashboardHeader — Signal Atlas Contextual Banner
- * Provides campus context, active filter pills, health status indicator,
- * and quick telemetry actions.
+ * CampusSignal — Dashboard Header
+ * Owner: Abhinandana S
  */
 export default function DashboardHeader({
-  activeFilter = "all",
-  onFilterChange,
-  buildingCount = 5,
-  totalLocations = 18,
-  deadZoneCount = 3,
-  systemStatus = "healthy",
-  onRefresh,
   lastUpdated,
+  selectedBuilding,
+  selectedFloor,
+  onRefresh,
+  loading = false,
 }) {
-  const filters = [
-    { id: "all", label: "All Campus Zones", count: totalLocations },
-    { id: "healthy", label: "Healthy (≥15 Mbps)", color: "text-[var(--atlas-healthy)]" },
-    { id: "weak", label: "Weak (5–15 Mbps)", color: "text-[var(--atlas-weak)]" },
-    { id: "poor", label: "Dead Zones (<5 Mbps)", color: "text-[var(--atlas-poor)]", count: deadZoneCount },
-  ];
-
   return (
-    <header className="bg-[var(--atlas-card)] border-b border-[var(--atlas-border)] px-4 py-3 sm:px-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        {/* Left: Brand Identity & Location Context */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-9 h-9 rounded bg-[var(--atlas-terracotta)] text-white shadow-xs">
-            <Radio className="w-5 h-5" strokeWidth={2.2} />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-base font-bold tracking-tight text-[var(--atlas-text-primary)]">
-                Signal Atlas
-              </h1>
-              <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-[var(--atlas-map-bg)] text-[var(--atlas-text-secondary)] border border-[var(--atlas-border)]">
-                GIS v1.2
-              </span>
-              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[var(--atlas-healthy)] bg-[var(--atlas-healthy-subtle)] px-2 py-0.5 rounded border border-[var(--atlas-healthy)]/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-[var(--atlas-healthy)] animate-pulse" />
-                Live Telemetry
-              </span>
-            </div>
-            <p className="text-xs text-[var(--atlas-text-secondary)] flex items-center gap-1.5 mt-0.5">
-              <span>Main Engineering Campus</span>
-              <span>•</span>
-              <span>{buildingCount} Buildings Registered</span>
-              <span>•</span>
-              <span>{totalLocations} Test Points</span>
-            </p>
-          </div>
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-4 border-b border-[#E4E8EC] dark:border-[#273140]">
+      <div>
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-[#B84C3A]" />
+          <h2 className="text-base sm:text-lg font-bold text-[#242B38] dark:text-[#E8EDF3] tracking-tight">
+            Signal Atlas — Campus Network Observability
+          </h2>
         </div>
-
-        {/* Right: Status Pill & Controls */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Filter Pills */}
-          <div className="flex items-center p-0.5 bg-[var(--atlas-map-bg)] border border-[var(--atlas-border)] rounded-md text-xs">
-            {filters.map((f) => {
-              const isActive = activeFilter === f.id;
-              return (
-                <button
-                  key={f.id}
-                  onClick={() => onFilterChange && onFilterChange(f.id)}
-                  className={`px-2.5 py-1 rounded font-medium transition-all ${
-                    isActive
-                      ? "bg-[var(--atlas-card)] text-[var(--atlas-text-primary)] shadow-2xs font-semibold"
-                      : "text-[var(--atlas-text-secondary)] hover:text-[var(--atlas-text-primary)]"
-                  }`}
-                >
-                  <span className="flex items-center gap-1.5">
-                    {f.id === "poor" && <span className="w-1.5 h-1.5 rounded-full bg-[var(--atlas-poor)]" />}
-                    {f.id === "healthy" && <span className="w-1.5 h-1.5 rounded-full bg-[var(--atlas-healthy)]" />}
-                    {f.label}
-                    {f.count !== undefined && (
-                      <span className={`text-[10px] px-1 rounded ${isActive ? "bg-[var(--atlas-map-bg)]" : "opacity-75"}`}>
-                        {f.count}
-                      </span>
-                    )}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Refresh Action */}
-          <button
-            onClick={onRefresh}
-            title="Refresh telemetry"
-            className="p-1.5 rounded border border-[var(--atlas-border)] bg-[var(--atlas-card)] text-[var(--atlas-text-secondary)] hover:text-[var(--atlas-text-primary)] hover:border-[var(--atlas-terracotta)]/40 transition-colors"
-          >
-            <RefreshCw className="w-4 h-4" />
-          </button>
-        </div>
+        <p className="text-xs text-[#697586] dark:text-[#8B98A9] mt-0.5 flex items-center gap-1.5">
+          <MapPin className="w-3.5 h-3.5 text-[#B84C3A]" />
+          <span>
+            {selectedBuilding ? selectedBuilding.name : 'All Campus Buildings'} • Floor{' '}
+            {selectedFloor !== null ? (selectedFloor === 0 ? 'Ground' : selectedFloor) : 'All'}
+          </span>
+          {lastUpdated && (
+            <span className="ml-2 text-[11px] text-[#697586] dark:text-[#8B98A9]">
+              • Updated: {lastUpdated}
+            </span>
+          )}
+        </p>
       </div>
-    </header>
+
+      <div className="flex items-center gap-2 shrink-0">
+        <Button
+          variant="secondary"
+          size="sm"
+          icon={RefreshCw}
+          onClick={onRefresh}
+          loading={loading}
+        >
+          Sync Telemetry
+        </Button>
+      </div>
+    </div>
   );
 }
