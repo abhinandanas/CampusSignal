@@ -42,7 +42,7 @@ export async function saveNetworkTest({ locationId, downloadMbps, uploadMbps, la
 	const response = await fetch(`${API_BASE_URL}/tests`, {
 		method: "POST",
 		headers: { Accept: "application/json", "Content-Type": "application/json" },
-		body: JSON.stringify({ locationId: Number(locationId), downloadMbps, uploadMbps, latencyMs, measurementSource }),
+		body: JSON.stringify({ locationId: String(locationId), downloadMbps, uploadMbps, latencyMs, measurementSource }),
 	});
 	const body = await readJson(response);
 	if (!body?.data) throw new Error("The tests API returned an unsupported response.");
