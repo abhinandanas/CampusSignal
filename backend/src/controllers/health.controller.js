@@ -1,5 +1,4 @@
-// backend/src/controllers/health.controller.js
-const database = require('../config/database');
+import { checkConnection } from '../config/database.js';
 
 /**
  * System Health Check Handler
@@ -10,7 +9,7 @@ const database = require('../config/database');
  */
 async function getHealth(req, res, next) {
   try {
-    const dbCheck = await database.checkConnection();
+    const dbCheck = await checkConnection();
 
     // If database is configured but disconnected, report degraded/error with 503
     const isDegraded = dbCheck.status === 'disconnected';
@@ -38,6 +37,5 @@ async function getHealth(req, res, next) {
   }
 }
 
-module.exports = {
-  getHealth
-};
+export { getHealth };
+export default { getHealth };

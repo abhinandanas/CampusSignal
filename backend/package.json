@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "CampusSignal backend API server — Node.js / Express / PostgreSQL",
   "main": "src/server.js",
+  "type": "module",
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
