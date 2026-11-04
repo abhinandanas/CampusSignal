@@ -1,41 +1,16 @@
-import { checkConnection } from '../config/database.js';
+import { pool } from '../config/database.js';
 
-/**
- * System Health Check Handler
- * GET /api/health
- *
- * Verifies that the API server is online and checks PostgreSQL connectivity
- * when database configuration is present.
- */
-async function getHealth(req, res, next) {
-  try {
-    const dbCheck = await checkConnection();
-
-    // If database is configured but disconnected, report degraded/error with 503
-    const isDegraded = dbCheck.status === 'disconnected';
-    const statusCode = isDegraded ? 503 : 200;
-
-    const response = {
-      status: isDegraded ? 'error' : 'success',
-      data: {
-        service: 'CampusSignal API',
-        name: 'CampusSignal',
-        api: 'healthy',
-        uptime: Number(process.uptime().toFixed(2)),
-        timestamp: new Date().toISOString(),
-        database: dbCheck.status
-      }
-    };
-
-    if (isDegraded) {
-      response.message = 'Database service unavailable';
+export function createHealthController(databasePool = pool) {
+  return async function health(_req, res) {
+    let database = 'disconnected';
+    if (databasePool) {
+      try { await databasePool.query('SELECT 1'); database = 'connected'; } catch { /* report degraded status */ }
     }
-
-    return res.status(statusCode).json(response);
-  } catch (err) {
-    next(err);
-  }
+    const healthy = database === 'connected';
+    res.status(200).json({
+      status: healthy ? 'success' : 'degraded',
+      message: healthy ? 'CampusSignal API is running' : 'CampusSignal API is running but database is unreachable',
+      data: { service: 'CampusSignal API', uptime: process.uptime(), timestamp: new Date().toISOString(), database },
+    });
+  };
 }
-
-export { getHealth };
-export default { getHealth };

@@ -1,68 +1,35 @@
-/**
- * CampusSignal — Dashboard Controller
- * Owner: Abhinandana S
- *
- * Responsibilities:
- * - Handle incoming HTTP requests for dashboard metrics and summaries
- * - Interface with dashboard.service.js to fetch data
- * - Return standardized JSON responses
- */
+import { createDashboardService } from '../services/dashboard.service.js';
 
-import * as dashboardService from '../services/dashboard.service.js';
-
-/**
- * GET /api/dashboard/summary (or GET /api/dashboard)
- * Retrieves pre-aggregated KPI cards, quality distribution, dead zones, and recent tests.
- */
-export async function getDashboardSummary(req, res, next) {
-  try {
-    const summary = await dashboardService.getDashboardSummary();
-    return res.status(200).json({
-      status: 'success',
-      data: summary,
-    });
-  } catch (error) {
-    return next(error);
-  }
+export function createDashboardController(service = createDashboardService()) {
+  return { summary: async (_req, res) => {
+    const summary = await service.summary();
+    res.json({ status: 'success', data: {
+      kpi: {
+        totalTestsRecorded: summary.total_tests,
+        avgDownloadSpeedMbps: Number(summary.average_download_mbps) || 0,
+        avgUploadSpeedMbps: Number(summary.average_upload_mbps) || 0,
+        avgLatencyMs: Number(summary.average_latency_ms) || 0,
+        identifiedDeadZones: summary.weak_count,
+        totalLocations: summary.total_locations,
+      },
+      qualityDistribution: {
+        goodCount: summary.good_count,
+        moderateCount: summary.fair_count,
+        poorCount: summary.weak_count,
+        goodPercent: summary.total_tests ? Number((summary.good_count * 100 / summary.total_tests).toFixed(1)) : 0,
+        moderatePercent: summary.total_tests ? Number((summary.fair_count * 100 / summary.total_tests).toFixed(1)) : 0,
+        poorPercent: summary.total_tests ? Number((summary.weak_count * 100 / summary.total_tests).toFixed(1)) : 0,
+      },
+      criticalDeadZones: [],
+      recentTests: [],
+      hasData: summary.total_tests > 0,
+      timestamp: new Date().toISOString(),
+      totalTests: summary.total_tests,
+      totalLocations: summary.total_locations,
+      goodCount: summary.good_count,
+      fairCount: summary.fair_count,
+      weakCount: summary.weak_count,
+      averageDownloadMbps: Number(summary.average_download_mbps) || 0,
+    } });
+  } };
 }
-
-/**
- * GET /api/dashboard/comparison
- * Retrieves performance comparison aggregated by campus building/zone.
- */
-export async function getLocationComparison(req, res, next) {
-  try {
-    const comparison = await dashboardService.getLocationComparison();
-    return res.status(200).json({
-      status: 'success',
-      count: comparison.length,
-      data: comparison,
-    });
-  } catch (error) {
-    return next(error);
-  }
-}
-
-/**
- * GET /api/dashboard/recent-tests
- * Retrieves recent network test submissions for the dashboard table.
- */
-export async function getRecentTests(req, res, next) {
-  try {
-    const limit = req.query.limit || 10;
-    const tests = await dashboardService.getRecentTests(limit);
-    return res.status(200).json({
-      status: 'success',
-      count: tests.length,
-      data: tests,
-    });
-  } catch (error) {
-    return next(error);
-  }
-}
-
-export default {
-  getDashboardSummary,
-  getLocationComparison,
-  getRecentTests,
-};
