@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Wifi, Sun, Moon, Radio, Compass } from 'lucide-react';
+import { Wifi, Sun, Moon, Radio, Compass, Menu } from 'lucide-react';
 import Button from '../common/Button';
 
 /**
  * CampusSignal — Signal Atlas Header
  * Owners: Abhinandana S + Yashwanth
  */
-export default function Header({ title = 'Signal Atlas', subtitle }) {
+export default function Header({ title = 'Signal Atlas', subtitle, onToggleMobileMenu }) {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
@@ -35,6 +35,17 @@ export default function Header({ title = 'Signal Atlas', subtitle }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Left: Brand & Page Context */}
         <div className="flex items-center gap-3">
+          {onToggleMobileMenu && (
+            <button
+              type="button"
+              onClick={onToggleMobileMenu}
+              className="p-2 rounded-md border border-[#E4E8EC] dark:border-[#273140] text-[#697586] dark:text-[#8B98A9] hover:text-[#242B38] dark:hover:text-[#E8EDF3] md:hidden cursor-pointer"
+              aria-label="Open mobile menu"
+            >
+              <Menu className="w-4 h-4" />
+            </button>
+          )}
+
           <Link href="/dashboard" className="flex items-center gap-2.5 group">
             <div className="w-9 h-9 rounded-md bg-[#B84C3A] text-white flex items-center justify-center font-bold shadow-xs">
               <Compass className="w-5 h-5 stroke-[2.2]" />
