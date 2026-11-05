@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Header from './Header';
+import MobileNavigation from './MobileNavigation';
 import { NAVIGATION_LINKS } from '../../lib/constants';
 import {
   LayoutDashboard,
@@ -27,10 +28,15 @@ const iconMap = {
  */
 export default function AppLayout({ children, title, subtitle }) {
   const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-[#11151D] text-[#242B38] dark:text-[#E8EDF3] transition-colors">
-      <Header title={title} subtitle={subtitle} />
+      <Header
+        title={title}
+        subtitle={subtitle}
+        onToggleMobileMenu={() => setMobileMenuOpen((open) => !open)}
+      />
 
       {/* Navigation Sub-bar */}
       <nav className="bg-white dark:bg-[#171D27] border-b border-[#E4E8EC] dark:border-[#273140] overflow-x-auto">
@@ -58,7 +64,13 @@ export default function AppLayout({ children, title, subtitle }) {
       </nav>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col">{children}</main>
+      <main className="flex-1 flex flex-col pb-14 md:pb-0">{children}</main>
+
+      {/* Mobile Navigation Drawer & Fixed Bottom Bar */}
+      <MobileNavigation
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      />
 
       {/* Footer */}
       <footer className="border-t border-[#E4E8EC] dark:border-[#273140] bg-white dark:bg-[#171D27] py-4 text-center text-xs text-[#697586] dark:text-[#8B98A9]">
