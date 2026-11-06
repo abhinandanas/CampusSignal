@@ -1,12 +1,12 @@
 // backend/tests/errors.test.js
-const { describe, it, before, after } = require('node:test');
-const assert = require('node:assert/strict');
-const http = require('node:http');
-const express = require('express');
-const app = require('../src/app');
-const env = require('../src/config/env');
-const notFound = require('../src/middleware/notFound');
-const errorHandler = require('../src/middleware/errorHandler');
+import { describe, it, before, after } from 'node:test';
+import assert from 'node:assert/strict';
+import http from 'node:http';
+import express from 'express';
+import app from '../src/app.js';
+import env from '../src/config/env.js';
+import { notFound } from '../src/middleware/notFound.js';
+import { errorHandler } from '../src/middleware/errorHandler.js';
 
 describe('Centralized Error Handling & 404 Not Found', () => {
   let server;
@@ -109,12 +109,12 @@ describe('Centralized Error Handling & 404 Not Found', () => {
       const res = await fetch(`http://127.0.0.1:${testPort}/test-prod-error`);
       assert.equal(res.status, 500);
 
-      const body = await res.json();
+      const rawText = await res.text();
+      const body = JSON.parse(rawText);
       assert.equal(body.status, 'error');
       assert.equal(body.message, 'Internal server error');
       assert.equal(body.details, null, 'Details must be null in production');
 
-      const rawText = await res.text();
       assert.equal(rawText.includes('secret_users'), false, 'Must not leak database table names');
       assert.equal(rawText.includes('stack'), false, 'Must not leak stack traces in production');
     } finally {
@@ -140,12 +140,12 @@ describe('Centralized Error Handling & 404 Not Found', () => {
       const res = await fetch(`http://127.0.0.1:${testPort}/test-db-error`);
       assert.equal(res.status, 503);
 
-      const body = await res.json();
+      const rawText = await res.text();
+      const body = JSON.parse(rawText);
       assert.equal(body.status, 'error');
       assert.equal(body.error.status, 503);
       assert.equal(body.message, 'Database service is temporarily unavailable');
 
-      const rawText = await res.text();
       assert.equal(rawText.includes('127.0.0.1:5432'), false, 'Must not leak IP or port in error response');
     } finally {
       await new Promise((resolve) => testServer.close(resolve));

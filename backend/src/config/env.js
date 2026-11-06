@@ -21,4 +21,14 @@ export const config = {
   poolConnectionTimeoutMs: Number.parseInt(process.env.DB_POOL_CONNECTION_TIMEOUT_MS || '2000', 10),
   databaseSsl: process.env.DATABASE_SSL === 'true',
   frontendOrigin: process.env.FRONTEND_ORIGIN || 'http://localhost:3000',
+  get NODE_ENV() {
+    return process.env.NODE_ENV || this.nodeEnv;
+  },
+  set NODE_ENV(val) {
+    process.env.NODE_ENV = val;
+    this.nodeEnv = val;
+  },
 };
+
+export const env = config;
+export default config;

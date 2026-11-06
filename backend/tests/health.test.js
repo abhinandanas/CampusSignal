@@ -1,9 +1,9 @@
 // backend/tests/health.test.js
-const { describe, it, before, after } = require('node:test');
-const assert = require('node:assert/strict');
-const http = require('node:http');
-const app = require('../src/app');
-const database = require('../src/config/database');
+import { describe, it, before, after } from 'node:test';
+import assert from 'node:assert/strict';
+import http from 'node:http';
+import app from '../src/app.js';
+import database from '../src/config/database.js';
 
 describe('Health-Check API (GET /api/health)', () => {
   let server;

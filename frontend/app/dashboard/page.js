@@ -7,6 +7,8 @@ import PageContainer from '../../components/layout/PageContainer';
 import DashboardHeader from '../../components/dashboard/DashboardHeader';
 import MetricCard from '../../components/dashboard/MetricCard';
 import PerformanceChart from '../../components/dashboard/PerformanceChart';
+import LocationComparison from '../../components/dashboard/LocationComparison';
+import RecentTestsTable from '../../components/dashboard/RecentTestsTable';
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
 import Button from '../../components/common/Button';
@@ -269,6 +271,12 @@ export default function DashboardPage() {
                 accentColor="#B84C3A"
               />
             </div>
+
+            {/* Location Comparative Benchmarks */}
+            <LocationComparison
+              title="Campus Comparative Throughput"
+              subtitle="Average Wi-Fi speeds across campus facilities"
+            />
           </div>
 
           {/* ========================================================================= */}
@@ -479,6 +487,14 @@ export default function DashboardPage() {
               subtitle={`Recorded throughput and ping trends across ${activeBuilding.name}`}
             />
           </div>
+        </div>
+
+        {/* Recent Campus Speed Tests Log */}
+        <div className="mt-6">
+          <RecentTestsTable
+            title="Recent Campus Telemetry Logs"
+            subtitle="Latest empirical client network measurements stored in PostgreSQL"
+          />
         </div>
       </PageContainer>
     </AppLayout>

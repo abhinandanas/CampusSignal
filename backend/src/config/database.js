@@ -27,3 +27,23 @@ export function requirePool() {
   }
   return pool;
 }
+
+export async function checkConnection(targetPool = pool) {
+  if (!targetPool || config.databaseUser === 'your_database_user') {
+    return { connected: true, status: 'not_configured' };
+  }
+  try {
+    await targetPool.query('SELECT 1');
+    return { connected: true, status: 'connected' };
+  } catch (error) {
+    return { connected: false, status: 'disconnected', error };
+  }
+}
+
+export const database = {
+  pool,
+  requirePool,
+  checkConnection,
+};
+
+export default database;
